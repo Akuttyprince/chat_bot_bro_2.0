@@ -1,0 +1,24 @@
+chatbot-bro/
+├── backend/                    # Flask backend
+│   ├── app.py                  # Main Flask app
+│   ├── config.py               # API keys and configs
+│   ├── questions.json          # Predefined questions
+│   ├── history.json            # Chat history
+│   └── requirements.txt        # Backend dependencies
+├── frontend/                   # React frontend
+│   ├── package.json            # Frontend dependencies
+│   ├── vite.config.js          # Vite config (assuming you use Vite)
+│   ├── public/                 # Static assets
+│   │   └── favicon.ico         # App icon
+│   ├── src/                    # React source
+│   │   ├── App.jsx             # Main app component
+│   │   ├── Chat.jsx            # Chat interface
+│   │   ├── FloatingJokeBar.jsx # Random jokes
+│   │   ├── History.jsx         # History page
+│   │   ├── Content.jsx         # Content display for levels
+│   │   ├── main.jsx            # Entry point
+│   │   ├── index.css           # Global styles
+│   │   └── assets/             # Images, etc.
+│   └── tailwind.config.js      # Tailwind CSS config
+├── README.md                   # Project docs
+└── vercel.json                 # Vercel config

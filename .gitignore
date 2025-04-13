@@ -1,0 +1,17 @@
+# Python/Flask backend
+backend/__pycache__/
+backend/*.pyc
+backend/venv/
+backend/.env
+backend/config.py
+backend/history.json
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.vercel/
+
+# Misc
+*.log
+.DS_Store

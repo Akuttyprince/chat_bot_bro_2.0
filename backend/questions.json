@@ -1,0 +1,22 @@
+[
+    {
+      "question": "what is coding?",
+      "answer": {
+        "beginner": "Coding is telling a computer what to do with instructions!",
+        "medium": "Coding is writing programs in languages like Python or JavaScript.",
+        "advanced": "Coding involves creating algorithms and systems."
+      },
+      "funFact": "The first bug was a moth in 1947!",
+      "suggestion": "Explain coding like a recipe."
+    },
+    {
+      "question": "what is ai?",
+      "answer": {
+        "beginner": "AI is like a smart computer!",
+        "medium": "AI uses data to learn and decide.",
+        "advanced": "AI involves neural networks and algorithms."
+      },
+      "funFact": "AI beat a chess champ in 1997!",
+      "suggestion": "Think of AI as a helpful robot."
+    }
+  ]
