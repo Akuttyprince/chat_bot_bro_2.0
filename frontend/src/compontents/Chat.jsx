@@ -97,7 +97,7 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-blue-600 mb-4">Chat with Bro</h1>
+      <h1 className="text-3xl font-bold text-blue-600 mb-4">Chat with Bro 2.0</h1>
       <div className="bg-white p-4 rounded-lg shadow-lg max-w-md mx-auto">
         <div className="mb-4 h-64 overflow-y-auto">
           <p className="text-gray-800">{response}</p>
