@@ -1,15 +1,72 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import FloatingJokeBar from './FloatingJokeBar';
-
+import '../styles/Chat.css';
 const Chat = () => {
   const [input, setInput] = useState('');
   const [response, setResponse] = useState('');
   const [levels, setLevels] = useState([]);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [voices, setVoices] = useState([]);
+  const [selectedVoiceIndex, setSelectedVoiceIndex] = useState(0);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const navigate = useNavigate();
+  const synthRef = useRef(window.speechSynthesis);
 
-  const API_BASE_URL = 'http://localhost:5000'; // Update for deployment
+  const API_BASE_URL = 'http://localhost:5000'; // update for deployment
+
+  useEffect(() => {
+    const loadVoices = () => {
+      const loadedVoices = synthRef.current.getVoices();
+      if (loadedVoices.length > 0) {
+        setVoices(loadedVoices);
+      }
+    };
+
+    loadVoices();
+    if (synthRef.current.onvoiceschanged !== undefined) {
+      synthRef.current.onvoiceschanged = loadVoices;
+    }
+  }, []);
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      console.log("Loaded voices:", voices.map(v => `${v.name} (${v.lang})`));
+    };
+  
+    if (typeof speechSynthesis !== 'undefined') {
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
+  
+
+  const speak = (text) => {
+    if (!text || !voices.length) return;
+
+    const isTamil = /[\u0B80-\u0BFF]/.test(text);
+    let voiceToUse = voices[selectedVoiceIndex];
+
+    if (isTamil) {
+      const tamilVoice = voices.find((v) => v.lang.includes('ta'));
+      if (tamilVoice) {
+        voiceToUse = tamilVoice;
+        console.log('Using Tamil voice:', tamilVoice.name);
+      } else {
+        console.warn('Tamil voice not found.');
+      }
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = voiceToUse;
+    utterance.onend = () => setIsSpeaking(false);
+    synthRef.current.speak(utterance);
+    setIsSpeaking(true);
+  };
+
+  const stopSpeaking = () => {
+    synthRef.current.cancel();
+    setIsSpeaking(false);
+  };
 
   const sendMessage = async () => {
     if (!input) return;
@@ -33,9 +90,9 @@ const Chat = () => {
         setLevels(data.levels);
         setSelectedQuestion(data.question);
       } else if (data.answer) {
-        setResponse(`${data.response}\nAnswer: ${data.answer}`);
-        const utterance = new SpeechSynthesisUtterance(data.answer);
-        window.speechSynthesis.speak(utterance);
+        const fullResponse = `${data.response}\nAnswer: ${data.answer}`;
+        setResponse(fullResponse);
+        speak(data.answer);
         setLevels([]);
         setSelectedQuestion(null);
       } else {
@@ -62,7 +119,7 @@ const Chat = () => {
       const text = event.results[0][0].transcript;
       console.log('Voice input:', text);
       setInput(text);
-      setResponse(`Heard: "${text}"—hit Send to ask!`);
+      setResponse(`Heard: "${text}" — hit Send to ask!`);
     };
 
     recognition.onerror = (event) => {
@@ -95,11 +152,17 @@ const Chat = () => {
     navigate(`/content?level=${level}&question=${encodeURIComponent(selectedQuestion.question)}`);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-3xl font-bold text-blue-600 mb-4">Chat with Bro 2.0</h1>
       <div className="bg-white p-4 rounded-lg shadow-lg max-w-md mx-auto">
-        <div className="mb-4 h-64 overflow-y-auto">
+        <div className="mb-4 h-64 overflow-y-auto whitespace-pre-wrap">
           <p className="text-gray-800">{response}</p>
           {levels.length > 0 && (
             <div className="mt-4">
@@ -127,14 +190,17 @@ const Chat = () => {
             </div>
           )}
         </div>
+
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="w-full p-2 border rounded mb-2"
           placeholder="Ask away!"
         />
-        <div className="flex gap-2">
+
+        <div className="flex gap-2 flex-wrap">
           <button
             onClick={sendMessage}
             className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -147,6 +213,12 @@ const Chat = () => {
           >
             🎙️ Voice
           </button>
+          <button
+            onClick={isSpeaking ? stopSpeaking : () => speak(response)}
+            className={`p-2 text-white rounded ${isSpeaking ? 'bg-red-500' : 'bg-green-500'} hover:opacity-80`}
+          >
+            {isSpeaking ? '🛑 Stop Voice' : '🔈 Speak Again'}
+          </button>
           <input
             type="file"
             onChange={handleFileUpload}
@@ -154,12 +226,29 @@ const Chat = () => {
             className="p-2"
           />
         </div>
+
+        <div className="mt-2">
+          <label className="text-sm text-gray-600">Change Voice:</label>
+          <select
+            className="w-full p-1 border rounded"
+            value={selectedVoiceIndex}
+            onChange={(e) => setSelectedVoiceIndex(Number(e.target.value))}
+          >
+            {voices.map((v, i) => (
+              <option key={i} value={i}>
+                {v.name} ({v.lang})
+              </option>
+            ))}
+          </select>
+        </div>
+
         <Link to="/history">
-          <button className="mt-4 p-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+          <button className="mt-4 p-2 bg-gray-500 text-white rounded hover:bg-gray-600 w-full">
             View History
           </button>
         </Link>
       </div>
+
       <FloatingJokeBar />
     </div>
   );
