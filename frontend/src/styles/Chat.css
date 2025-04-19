@@ -1,0 +1,255 @@
+/* Main Theme Colors */
+:root {
+    --main-bg: #F3F4F6;
+    --card-bg: #FFFFFF;
+    --secondary-bg: #E5F6FD;
+    --primary-text: #374151;
+    --secondary-text: #6B7280;
+    --border-color: #D1D5DB;
+    --highlight-bg: #FEF3C7;
+    --tip-bg: #DCFCE7;
+    --input-bg: #F9FAFB;
+    --primary-button: #3B82F6;
+    --primary-button-hover: #2563EB;
+    --secondary-button: #9CA3AF;
+    --secondary-button-hover: #6B7280;
+    --success-button: #10B981;
+    --success-button-hover: #059669;
+    --danger-button: #EF4444;
+    --danger-button-hover: #DC2626;
+    --purple-button: #8B5CF6;
+    --purple-button-hover: #7C3AED;
+  }
+  
+  /* Global Styles */
+  body {
+    background-color: var(--main-bg);
+    color: var(--primary-text);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+  }
+  
+  /* Layout and Cards */
+  .min-h-screen {
+    background-color: var(--main-bg);
+    background-image: radial-gradient(at 10% 10%, rgba(229, 246, 253, 0.5) 0px, transparent 50%),
+                      radial-gradient(at 90% 90%, rgba(220, 252, 231, 0.5) 0px, transparent 50%);
+  }
+  
+  .bg-white {
+    background-color: var(--card-bg);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 
+                0 8px 10px -6px rgba(0, 0, 0, 0.025);
+    border-radius: 1rem;
+    border: 1px solid rgba(209, 213, 219, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .bg-white:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+                0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
+  }
+  
+  /* Typography */
+  h1.text-3xl {
+    color: #2563EB;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+    letter-spacing: -0.025em;
+    font-weight: 700;
+  }
+  
+  .text-gray-800 {
+    color: var(--primary-text);
+    line-height: 1.6;
+  }
+  
+  .text-blue-600 {
+    color: #2563EB;
+    font-weight: 600;
+  }
+  
+  /* Input Styling */
+  input[type="text"], select {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  input[type="text"]:focus, select:focus {
+    outline: none;
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  }
+  
+  input[type="file"] {
+    border: 1px dashed var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background-color: rgba(229, 246, 253, 0.3);
+  }
+  
+  /* Button Styling */
+  button {
+    font-weight: 500;
+    border-radius: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(0);
+  }
+  
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  button:active {
+    transform: translateY(0);
+  }
+  
+  .bg-blue-500 {
+    background-color: var(--primary-button);
+    border: none;
+  }
+  
+  .bg-blue-500:hover {
+    background-color: var(--primary-button-hover);
+  }
+  
+  .bg-purple-500 {
+    background-color: var(--purple-button);
+    border: none;
+  }
+  
+  .bg-purple-500:hover {
+    background-color: var(--purple-button-hover);
+  }
+  
+  .bg-green-500 {
+    background-color: var(--success-button);
+    border: none;
+  }
+  
+  .bg-green-500:hover {
+    background-color: var(--success-button-hover);
+  }
+  
+  .bg-red-500 {
+    background-color: var(--danger-button);
+    border: none;
+  }
+  
+  .bg-red-500:hover {
+    background-color: var(--danger-button-hover);
+  }
+  
+  .bg-gray-500 {
+    background-color: var(--secondary-button);
+    border: none;
+  }
+  
+  .bg-gray-500:hover {
+    background-color: var(--secondary-button-hover);
+  }
+  
+  /* Message Area */
+  .mb-4.h-64 {
+    background-color: rgba(249, 250, 251, 0.8);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary-button) transparent;
+  }
+  
+  .mb-4.h-64::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .mb-4.h-64::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .mb-4.h-64::-webkit-scrollbar-thumb {
+    background-color: var(--secondary-button);
+    border-radius: 20px;
+  }
+  
+  /* Level Buttons */
+  button.m-2.p-2.bg-green-500 {
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to right, #10B981, #059669);
+    border-radius: 0.5rem;
+    font-weight: 500;
+  }
+  
+  /* Question Info Boxes */
+  p.text-blue-600.mt-2, p.text-blue-600 {
+    background-color: var(--highlight-bg);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #F59E0B;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  p.text-blue-600:nth-of-type(2) {
+    background-color: var(--tip-bg);
+    border-left-color: #10B981;
+  }
+  
+  /* Floating Joke Bar */
+  .floating-joke-bar {
+    background: linear-gradient(to right, #3B82F6, #8B5CF6);
+    color: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    max-width: 300px;
+    z-index: 50;
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  
+  /* Voice Control Button Special Styling */
+  button:has(🎙️) {
+    background: linear-gradient(to right, #8B5CF6, #6D28D9);
+  }
+  
+  /* Make layout more responsive */
+  @media (max-width: 640px) {
+    .max-w-md {
+      width: 95%;
+      margin: 0 auto;
+    }
+    
+    .flex.gap-2 {
+      flex-direction: column;
+    }
+    
+    button {
+      width: 100%;
+    }
+  }
