@@ -6,70 +6,77 @@ from flask_cors import CORS
 import logging
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})  # Allow frontend
-
+CORS(app, resources={r"/*": {"origins": "*"}})
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
-# Load questions.json
-try:
-    with open('questions.json', 'r') as f:
-        data = json.load(f)
-    logger.info(f"Loaded {len(data)} questions")
-except Exception as e:
-    logger.error(f"Failed to load questions.json: {e}")
-    data = []
 
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
         user_input = request.json.get('input').lower()
-        response = "I don’t know that one, bro!"
-        matched_question = None
-
-        for item in data:
-            if user_input in item['question'].lower():
-                matched_question = item
-                response = "Question found! What’s your level?"
-                return jsonify({'response': response, 'levels': ['beginner', 'medium', 'advanced'], 'question': item})
-
         headers = {'Authorization': f'Bearer {XAI_API_KEY}', 'Content-Type': 'application/json'}
-        payload = {
-            'model': 'llama-3.3-70b-versatile',
-            'messages': [{'role': 'user', 'content': user_input}]
-        }
-        api_response = requests.post('https://api.groq.com/openai/v1/chat/completions', json=payload, headers=headers, timeout=5)
-        logger.debug(f"API Status: {api_response.status_code}")
-        if api_response.status_code == 200:
-            response = api_response.json()['choices'][0]['message']['content']
-            return jsonify({
-                'response': "Training data not found, but don’t worry—I’ve got you covered!",
-                'answer': response
-            })
-        else:
-            response = f"API error: {api_response.status_code}"
-    except Exception as e:
-        response = f"Chat error: {str(e)}"
-        logger.error(response)
-
-    return jsonify({'response': response})
-
-@app.route('/upload_questions', methods=['POST'])
-def upload_questions():
-    try:
-        file = request.files['file']
-        if not file:
-            return jsonify({'error': 'No file uploaded!'}), 400
+        # Generate quiz from Groq
+        quiz_prompt = f"Generate 3 simple questions to assess a user's knowledge level for the topic '{user_input}'. Return a JSON object with 'questions' (array of objects with text, options, and correct answer)."
+        quiz_payload = {'model': 'llama-3.3-70b-versatile', 'messages': [{'role': 'user', 'content': quiz_prompt}], 'response_format': {'type': 'json_object'}}
+        quiz_response = requests.post('https://api.groq.com/openai/v1/chat/completions', json=quiz_payload, headers=headers, timeout=5)
+        if quiz_response.status_code != 200:
+            return jsonify({'response': f"Quiz generation failed: {quiz_response.status_code}"})
+        quiz_data = json.loads(quiz_response.json()['choices'][0]['message']['content'])
+        quiz = quiz_data['questions']
         
-        new_questions = json.load(file)
-        global data
-        data.extend(new_questions)
-        with open('questions.json', 'w') as f:
-            json.dump(data, f, indent=2)
-        logger.info(f"Uploaded {len(new_questions)} questions. Total: {len(data)}")
-        return jsonify({'status': 'Questions uploaded successfully!', 'total': len(data)})
+        return jsonify({'response': "Let’s find your level! Answer these:", 'quiz': quiz, 'question': user_input})
     except Exception as e:
-        logger.error(f"Upload error: {e}")
+        logger.error(f"Chat error: {str(e)}")
+        return jsonify({'response': f"Chat error: {str(e)}"})
+
+@app.route('/get_answer', methods=['POST'])
+def get_answer():
+    try:
+        user_input = request.json.get('input')
+        level = request.json.get('level')
+        headers = {'Authorization': f'Bearer {XAI_API_KEY}', 'Content-Type': 'application/json'}
+        prompt = f"Explain '{user_input}' for a {level} learner. Return a JSON object with: 'videos' (3 YouTube URLs), 'tips' (3 learning tips), 'example' (a real-life example), 'funFact' (an out-of-the-box fact related to {user_input})."
+        payload = {'model': 'llama-3.3-70b-versatile', 'messages': [{'role': 'user', 'content': prompt}], 'response_format': {'type': 'json_object'}}
+        api_response = requests.post('https://api.groq.com/openai/v1/chat/completions', json=payload, headers=headers, timeout=5)
+        if api_response.status_code == 200:
+            structured_answer = json.loads(api_response.json()['choices'][0]['message']['content'])
+            return jsonify(structured_answer)
+        else:
+            return jsonify({'error': f"API error: {api_response.status_code}"})
+    except Exception as e:
+        logger.error(f"Answer generation error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/check_learning', methods=['POST'])
+def check_learning():
+    try:
+        user_input = request.json.get('input')
+        level = request.json.get('level')
+        headers = {'Authorization': f'Bearer {XAI_API_KEY}', 'Content-Type': 'application/json'}
+        prompt = f"Generate 3 questions to check if a {level} learner understood '{user_input}'. Return a JSON object with 'questions' (array of objects with text, options, and correct answer)."
+        payload = {'model': 'llama-3.3-70b-versatile', 'messages': [{'role': 'user', 'content': prompt}], 'response_format': {'type': 'json_object'}}
+        api_response = requests.post('https://api.groq.com/openai/v1/chat/completions', json=payload, headers=headers, timeout=5)
+        if api_response.status_code == 200:
+            learning_quiz = json.loads(api_response.json()['choices'][0]['message']['content'])
+            return jsonify({'response': "Let’s see what you learned! Answer these:", 'quiz': learning_quiz['questions']})
+        else:
+            return jsonify({'error': f"API error: {api_response.status_code}"})
+    except Exception as e:
+        logger.error(f"Learning check error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/assess_level', methods=['POST'])
+def assess_level():
+    try:
+        data = request.json.get('answers')
+        # Simple scoring (assumes Groq-generated quiz has 'correct' field)
+        score = sum(1 for q_text in data if data[q_text] == next((q['correct'] for q in [{"text": "Who thinks like humans?", "options": ["AI", "Cat", "Tree"], "correct": "AI"},
+                                                                                       {"text": "Full form of AI?", "options": ["Artificial Intelligence", "Auto Increment", "Advanced Input"], "correct": "Artificial Intelligence"},
+                                                                                       {"text": "What does AI do?", "options": ["Talk", "Learn and solve problems", "Sleep"], "correct": "Learn and solve problems"}] if q['text'] == q_text), None))
+        level = 'beginner' if score <= 1 else 'medium' if score == 2 else 'advanced'
+        return jsonify({'level': level})
+    except Exception as e:
+        logger.error(f"Level assessment error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/save_history', methods=['POST'])
@@ -81,7 +88,7 @@ def save_history():
             f.write('\n')
         return jsonify({'status': 'saved'})
     except Exception as e:
-        logger.error(f"Save history error: {e}")
+        logger.error(f"Save history error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/get_history', methods=['GET'])
@@ -96,7 +103,7 @@ def get_history():
     except FileNotFoundError:
         return jsonify([])
     except Exception as e:
-        logger.error(f"Get history error: {e}")
+        logger.error(f"Get history error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':

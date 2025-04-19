@@ -21,15 +21,15 @@ const History = () => {
         ) : (
           history.map((entry, index) => (
             <div key={index} className="mb-4">
-              <p className="text-blue-600">Q: {entry.question}</p>
+              <Link to={`/content?level=beginner&answer=${encodeURIComponent(entry.response)}&question=${encodeURIComponent(entry.question)}`}>
+                <p className="text-blue-600 underline">Q: {entry.question}</p>
+              </Link>
               <p className="text-gray-800">A: {entry.response}</p>
             </div>
           ))
         )}
         <Link to="/">
-          <button className="mt-4 p-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-            Back to Chat
-          </button>
+          <button className="mt-4 p-2 bg-gray-500 text-white rounded hover:bg-gray-600">Back to Chat</button>
         </Link>
       </div>
     </div>
