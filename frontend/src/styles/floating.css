@@ -1,0 +1,114 @@
+/* FloatingJokeBar Component Styles with Updated Colors */
+.fixed.bottom-4.right-4 {
+    background: linear-gradient(135deg, #E5F6FD 0%, #38BDF8 100%);
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+                0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    padding: 1.25rem;
+    max-width: 300px;
+    z-index: 50;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    animation: float 3s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+  
+  /* Floating animation */
+  @keyframes float {
+    0% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(1deg);
+    }
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+  }
+  
+  /* Joke button styling */
+  .fixed.bottom-4.right-4 button {
+    background: linear-gradient(to right, #3B82F6, #2563EB);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
+    border: none;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 0.025em;
+  }
+  
+  .fixed.bottom-4.right-4 button:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5);
+    background: linear-gradient(to right, #2563EB, #1D4ED8);
+  }
+  
+  .fixed.bottom-4.right-4 button:active {
+    transform: translateY(0);
+  }
+  
+  /* Joke text styling */
+  .fixed.bottom-4.right-4 p.mt-2 {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    color: #374151;
+    line-height: 1.5;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #3B82F6;
+    font-style: italic;
+    transition: all 0.3s ease;
+  }
+  
+  /* Add a subtle pop effect when joke appears */
+  @keyframes popIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .fixed.bottom-4.right-4 p.mt-2 {
+    animation: popIn 0.3s ease-out forwards;
+  }
+  
+  /* Make it responsive for smaller screens */
+  @media (max-width: 640px) {
+    .fixed.bottom-4.right-4 {
+      left: 1rem;
+      right: 1rem;
+      max-width: calc(100% - 2rem);
+    }
+  }
+  
+  /* Add a fun icon to the button */
+  .fixed.bottom-4.right-4 button::before {
+    content: "😂 ";
+    margin-right: 0.25rem;
+  }
+  
+  /* Add a subtle pulse effect to the button */
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+  }
+  
+  .fixed.bottom-4.right-4 button {
+    animation: pulse 2s infinite;
+  }
